@@ -10,15 +10,20 @@ export const protectRoute = async (req, res, next) => {
         message: "Not authorized - No token provided",
       });
     }
+
+    // Token verification and decoding
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (!decoded) {
+
+    // Find the user with the decoded ID
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
       return res.status(401).json({
         success: false,
-        message: "Not authorized - Invalid Token",
+        message: "Not authorized - User not found",
       });
     }
-    const cuurentUser = await User.findById(decoded.id);
-    req.user = cuurentUser;
+
+    req.user = currentUser; // Attach the current user to the request object
     next();
   } catch (error) {
     console.log("Error in auth middleware", error);
