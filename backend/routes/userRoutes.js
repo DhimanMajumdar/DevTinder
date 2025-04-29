@@ -4,6 +4,5 @@ import { updateProfile } from "../controllers/userController.js";
 
 const router = express.Router();
 
-router.put("/update-profile", protectRoute, updateProfile);
-
+router.put("/update", protectRoute, updateProfile);
 export default router;

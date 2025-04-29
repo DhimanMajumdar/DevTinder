@@ -16,12 +16,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    age: {
+      type: Number,
+      required: true,
+    },
     gender: {
       type: String,
       required: true,
       enum: ["male", "female"],
     },
-    genderPreferences: {
+    genderPreference: {
       type: String,
       required: true,
       enum: ["male", "female", "both"],
@@ -51,7 +55,12 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  // 1234 => hash the password
+  // MAKE SURE TO ADD THIS IF CHECK!!! 👇 I forgot to add this in the tutorial
+  // only hash if password is modified.
+  if (!this.isModified("password")) {
+    return next();
+  }
+
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
@@ -61,4 +70,5 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 const User = mongoose.model("User", userSchema);
+
 export default User;
